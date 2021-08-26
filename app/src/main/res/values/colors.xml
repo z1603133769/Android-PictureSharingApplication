@@ -20,5 +20,6 @@
     <color name="colorTextPlaceholder">#C0C4CC</color>
     <color name="borderColorBase">#DCDFE6</color>
     <color name="backgroundColorBase">#F5F7FA</color>
-
+    <color name="textColor">#666666</color>
+    <color name="textActiveColor">#0097F7</color>
 </resources>
