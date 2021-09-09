@@ -1,7 +1,13 @@
 package com.example.picture_sharing_application;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.nfc.Tag;
 import android.os.Bundle;
 
@@ -18,12 +24,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.makeramen.roundedimageview.RoundedImageView;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +54,10 @@ public class HomeFragment extends Fragment {
     private int mCurrentColIndex = 0;
     private CardAdapter adapter;
     private Context context = null;
+    //home视图
     private View rootView;
+    //card视图
+    private View cardView;
 //    //新闻来源
 //    private String source;
 //    //下拉组件
@@ -104,6 +119,8 @@ public class HomeFragment extends Fragment {
         context = getActivity();
         rootView = inflater.inflate(R.layout.fragment_home,
                 container, false);
+        cardView = inflater.inflate(R.layout.card_item,
+                container, false);
         //初始化布局
         initView();
         //初始化对象并保存数据
@@ -119,6 +136,7 @@ public class HomeFragment extends Fragment {
     //初始化布局
     private void initView() {
         lvCardList = rootView.findViewById(R.id.lv_card_list);
+
 //        lvCardList.setOnItemClickListener(
 //                new AdapterView.OnItemClickListener() {
 //                    @Override
@@ -159,6 +177,7 @@ public class HomeFragment extends Fragment {
 //        swipe.setRefreshing(false);
 //    }
 
+
     //初始化对象并保存数据
     private void initData() {
         CardData = new ArrayList<>();
@@ -196,6 +215,5 @@ public class HomeFragment extends Fragment {
             }
         }).start();
     }
-
 
 }

@@ -1,5 +1,7 @@
 package com.example.picture_sharing_application;
 
+import android.graphics.Bitmap;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -102,4 +104,5 @@ public class Card {
     public void updateData(){
         this.mDescription = "#"+this.mDescription+"#";
     }
+
 }
