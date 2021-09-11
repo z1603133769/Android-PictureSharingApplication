@@ -145,7 +145,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
             Glide.with(mContext).load(imgUrl)
                     .into(holder.CardImage);
             //内容
-            holder.CardContent.setText(card.getDescription());
+            String content = "#"+card.getDescription()+"#";
+            holder.CardContent.setText(content);
             //头像
             Glide.with(mContext).load(headUrl)
                     .into(holder.HeadPic);
