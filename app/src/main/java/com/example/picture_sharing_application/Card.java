@@ -5,104 +5,77 @@ import android.graphics.Bitmap;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Card {
+import cn.bmob.v3.BmobObject;
+import cn.bmob.v3.datatype.BmobFile;
 
-    @Expose(serialize = false, deserialize = false)
-    private Integer mId;
+public class Card extends BmobObject {
 
-    @SerializedName("title")
-    private String mTitle;
+    //昵称
+    private String nickName;
 
-    @SerializedName("description")
-    private String mDescription;
+    //头像
+    private BmobFile headPicture;
 
-    @SerializedName("picUrl")
-    private String mPicUrl;
+    //卡片图片
+    private BmobFile Picture;
 
-    @SerializedName("url")
-    private String mContentUrl;
+    //文字内容
+    private String Description;
 
-    @SerializedName("ctime")
-    private String mPublishTime;
+    //点赞数
+    private Integer LikeNumber;
 
-    @SerializedName("nickname")
-    private String mNickName;
-
-    @SerializedName("copyright")
-    private String mLikeNumber;
-
-//    @SerializedName("picUrl")
-    private String mHeadPic;
+    //点赞状态
+    private Boolean LikeState;
 
     public Card() {
     }
 
-    public String getTitle() {
-        return mTitle;
+    public String getNickName() {
+        return nickName;
     }
 
-    public void setTitle(String mTitle) {
-        this.mTitle = mTitle;
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public BmobFile getHeadPicture() {
+        return headPicture;
+    }
+
+    public void setHeadPicture(BmobFile headPicture) {
+        this.headPicture = headPicture;
+    }
+
+    public BmobFile getPicture() {
+        return Picture;
+    }
+
+    public void setPicture(BmobFile picture) {
+        Picture = picture;
     }
 
     public String getDescription() {
-        return mDescription;
+        return Description;
     }
 
-    public void setDescription(String mDescription) {
-        this.mDescription = mDescription;
+    public void setDescription(String description) {
+        Description = description;
     }
 
-    public String getPicUrl() {
-        return mPicUrl;
+    public Integer getLikeNumber() {
+        return LikeNumber;
     }
 
-    public void setPicUrl(String mPicUrl) {
-        this.mPicUrl = mPicUrl;
+    public void setLikeNumber(Integer likeNumber) {
+        LikeNumber = likeNumber;
     }
 
-    public String getContentUrl() {
-        return mContentUrl;
+    public Boolean getLikeState() {
+        return LikeState;
     }
 
-    public void setContentUrl(String mContentUrl) {
-        this.mContentUrl = mContentUrl;
+    public void setLikeState(Boolean likeState) {
+        LikeState = likeState;
     }
-
-    public Integer getId() {
-        return mId;
-    }
-
-    public String getDate() {
-        return mPublishTime;
-    }
-
-    public String getNickName() {
-        return mNickName;
-    }
-
-    public void setNickName(String NickName) {
-        this.mNickName = NickName;
-    }
-
-    public String getLikeName() {
-        return mLikeNumber;
-    }
-
-    public void setLikeName(String LikeNumber) {
-        this.mLikeNumber = LikeNumber;
-    }
-
-    public String getHeadPic() {
-        return mHeadPic;
-    }
-
-    public void setHeadPic(String HeadPic) {
-        this.mHeadPic = HeadPic;
-    }
-
-    public void updateData(){
-        this.mDescription = "#"+this.mDescription+"#";
-    }
-
 }

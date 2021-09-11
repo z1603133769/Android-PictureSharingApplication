@@ -13,6 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import cn.bmob.v3.Bmob;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     //来自activity_main.xml
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Bmob.initialize(this, "e1708cc4012f7c433a0e65ad4b6e4386");
         //初始化页面
         initView();
         //设置开始页面

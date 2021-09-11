@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -40,6 +41,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -58,59 +62,10 @@ public class HomeFragment extends Fragment {
     private View rootView;
     //card视图
     private View cardView;
-//    //新闻来源
-//    private String source;
-//    //下拉组件
-//    private SwipeRefreshLayout swipe;
-//    //当前新闻页数
-//    private int mPage=1;
-
-//    private int[] mCols = new int[]{Constants.Card_COL5,
-//            Constants.Card_COL7, Constants.Card_COL8,
-//            Constants.Card_COL10, Constants.Card_COL11};
 
     public HomeFragment(){
 
     }
-
-    //进行数据请求与解析
-    private okhttp3.Callback callback = new okhttp3.Callback() {
-        @Override
-        public void onFailure(Call call, IOException e) {
-            Log.e(TAG, "Failed to connect server!");
-            e.printStackTrace();
-        }
-
-        @Override
-        public void onResponse(Call call, Response response)
-                throws IOException {
-            if (response.isSuccessful()) {
-                Log.d(TAG,"请求成功!!!");
-                final String body = response.body().string();
-                List<Card> data;
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Gson gson = new Gson();
-                        Type jsonType =
-                                new TypeToken<BaseResponse<List<Card>>>() {}.getType();
-                        BaseResponse<List<Card>> CardListResponse =
-                                gson.fromJson(body, jsonType);
-                        for (Card card:CardListResponse.getData()) {
-                            Log.d(TAG,"数据为:"+card.getDescription());
-                            Log.d(TAG,"头像为:"+card.getHeadPic());
-                            card.updateData();
-                            adapter.addData(card);
-                        }
-
-                        adapter.notifyDataSetChanged();
-                    }
-                });
-            } else {
-                Log.d(TAG,"请求失败!!!");
-            }
-        }
-    };
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -187,33 +142,27 @@ public class HomeFragment extends Fragment {
         lvCardList.setLayoutManager(layoutManager);
         adapter = new CardAdapter(context, CardData);
         lvCardList.setAdapter(adapter);
-
-        refreshData(1);
+        //获取首页卡片数据列表
+        getCardData();
     }
 
-    //实际的API请求(子线程)(异步请求)
-    private void refreshData(final int page) {
-        new Thread(new Runnable() {
+    //从Bmob后台数据库，获取首页卡片数据
+    private void getCardData() {
+        BmobQuery<Card> query = new BmobQuery<>();
+        //按照时间降序
+        query.order("-createdAt");
+        query.findObjects(new FindListener<Card>() {
             @Override
-            public void run() {
-                CardRequest requestObj = new CardRequest();
-
-                requestObj.setNum(Constants.CARD_NUM);
-                requestObj.setPage(page);
-                String urlParams = requestObj.toString();
-
-                Log.d(TAG,"地址为:"+Constants.GENERAL_CARD_URL + urlParams);
-                Request request = new Request.Builder()
-                        .url(Constants.GENERAL_CARD_URL + urlParams)
-                        .get().build();
-                try {
-                    OkHttpClient client = new OkHttpClient();
-                    client.newCall(request).enqueue(callback);
-                } catch (NetworkOnMainThreadException ex) {
-                    ex.printStackTrace();
+            public void done(List<Card> cardData, BmobException e) {
+                if (e == null) {
+                    adapter.setData(cardData);
+                    adapter.notifyDataSetChanged();
+                    //Snackbar.make(rootView, "查询成功：" + cardData.size(), Snackbar.LENGTH_LONG).show();
+                } else {
+                    Log.e("BMOB", e.toString());
+                    //Snackbar.make(rootView, e.getMessage(), Snackbar.LENGTH_LONG).show();
                 }
             }
-        }).start();
+        });
     }
-
 }

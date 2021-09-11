@@ -1,5 +1,6 @@
 package com.example.picture_sharing_application;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -9,10 +10,16 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.nfc.Tag;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
+import android.os.NetworkOnMainThreadException;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -22,7 +29,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
 import com.makeramen.roundedimageview.RoundedImageView;
+
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -35,10 +44,15 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.concurrent.ExecutionException;
+
+import okhttp3.OkHttpClient;
 
 public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
-        Bitmap bitmap;
+        Bitmap img;
         private List<Card> mCardList;
         private Context mContext;
         private String imgName;
@@ -46,6 +60,28 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
         private Dialog dialog;
         //显示大图
         private ImageView mImageView;
+
+        //handler 用于线程间的通信
+        //当点击图片时，通过url加载图片，并显示大图
+        private Handler myHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case 0:
+                        //测试
+                        Log.d("Adapter","img的内容为: "+imgName);
+                        Log.d("Adapter","img的图片为: "+img);
+                        mImageView = getImageView(img);
+                        //初始化会话
+                        initDialog();
+                        //显示会话
+                        dialog.show();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
 
         static class ViewHolder extends RecyclerView.ViewHolder{
             RoundedImageView CardImage;
@@ -86,23 +122,12 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
                 public void onClick(View view) {
                     int position = holder.getAdapterPosition();
                     Card card = mCardList.get(position);
-                    String imgUrl = card.getPicUrl();
-                    Log.d("Adapter","图片地址为: "+ imgUrl);
-                    //
-                    holder.CardImage.setDrawingCacheEnabled(true);
-                    //之前的已经回收掉了，必须要先创建好
-                    Bitmap img =  Bitmap.createBitmap(holder.CardImage.getDrawingCache());
-                    holder.CardImage.setDrawingCacheEnabled(false);
+                    String imgUrl = card.getPicture().getUrl();
                     //获取img名称
                     imgName = card.getDescription();
-                    //测试
-                    Log.d("Adapter","img的名称为: "+imgName);
-                    Log.d("Adapter","img的图片为: "+img);
-                    mImageView = getImageView(img);
-                    //初始化会话
-                    initDialog();
-                    //显示会话
-                    dialog.show();
+                    //通过url,加载图片
+                    initNetWorkImage(imgUrl,mContext);
+                    Log.d("Adapter","图片地址为: "+ imgUrl);
                 }
             });
             return holder;
@@ -111,23 +136,24 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             Card card = mCardList.get(position);
-            Log.d("Adapter","图片地址为:"+card.getPicUrl());
-            Log.d("Adapter","头像地址为:"+card.getHeadPic());
+            String imgUrl = card.getPicture().getUrl();
+            String headUrl = card.getHeadPicture().getUrl();
+
+            Log.d("Adapter","图片地址为:"+imgUrl);
+            Log.d("Adapter","头像地址为:"+headUrl);
             //图片
-            Glide.with(mContext).load(card.getPicUrl())
+            Glide.with(mContext).load(imgUrl)
                     .into(holder.CardImage);
             //内容
             holder.CardContent.setText(card.getDescription());
             //头像
-            if(card.getHeadPic() != null){
-                Glide.with(mContext).load(card.getHeadPic())
-                        .into(holder.HeadPic);
-            }
+            Glide.with(mContext).load(headUrl)
+                    .into(holder.HeadPic);
             //昵称
             holder.NickName.setText(card.getNickName());
             //收藏数
-            holder.LikeNumber.setText(card.getLikeName());
-
+            String likeNumber = card.getLikeNumber().toString();
+            holder.LikeNumber.setText(likeNumber);
         }
 
         @Override
@@ -140,12 +166,15 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
             //notifyDataSetChanged();
         }
 
-    private void initDialog() {
-//        mImageView = getImageView();
-        //大图所依附的dialog
-        dialog = new Dialog(mContext, R.style.Theme_AppCompat_Light_Dialog);
-        dialog.setContentView(mImageView);
+        public void setData(List<Card> cardData){
+            mCardList.addAll(cardData);
+            //notifyDataSetChanged();
+        }
 
+    private void initDialog() {
+        //大图所依附的dialog
+        dialog = new Dialog(mContext, R.style.Theme_AppCompat);
+        dialog.setContentView(mImageView);
         //大图的点击事件（点击让他消失）
         mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -184,6 +213,35 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
         //imageView设置图片
         iv.setImageBitmap(img);
         return iv;
+    }
+
+    /**
+     * 自己写的加载网络图片的方法
+     * img_url 图片的网址
+     */
+    public void initNetWorkImage(final String imgUrl, final Context context) {
+        new AsyncTask<Void, Void, Bitmap>() {
+            @Override
+            protected Bitmap doInBackground(Void... params) {
+                Bitmap bitmap = null;
+                try {
+                    bitmap = Glide.with(context)
+                            .asBitmap()
+                            .load(imgUrl)
+                            .submit(360, 480).get();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return bitmap;
+            }
+
+            @Override
+            protected void onPostExecute(Bitmap bitmap) {
+                img = bitmap;
+                myHandler.sendEmptyMessage(0);
+            }
+
+        }.execute();
     }
 
 }
