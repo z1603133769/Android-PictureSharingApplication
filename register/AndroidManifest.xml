@@ -26,7 +26,7 @@
             android:name="com.google.android.actions"
             android:resource="@xml/shape" />
 
-        <activity android:name="com.example.picture_sharing_application.Register">
+        <activity android:name="com.example.picture_sharing_application.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,7 +34,7 @@
             </intent-filter>
         </activity>
         <activity android:name="com.example.picture_sharing_application.MainActivity"/>
-        <activity android:name="com.example.picture_sharing_application.SignUp"/>
+        <activity android:name="com.example.picture_sharing_application.RegisterActivity"/>
 
         <provider
             android:name="cn.bmob.v3.util.BmobContentProvider"
