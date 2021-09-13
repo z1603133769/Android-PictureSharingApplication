@@ -54,8 +54,6 @@ public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment";
     private RecyclerView lvCardList;
     private List<Card> CardData;
-    private int page = 1;
-    private int mCurrentColIndex = 0;
     private CardAdapter adapter;
     private Context context = null;
     //home视图

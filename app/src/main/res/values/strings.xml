@@ -10,5 +10,7 @@
     <string name="login_password" >login_password</string>
     <string name="login_remember_passoword">login_remember_password</string>
 
+    <string name="imgContent">这一刻的想法...</string>
+
 
 </resources>
