@@ -29,6 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.Target;
 import com.makeramen.roundedimageview.RoundedImageView;
 
@@ -122,11 +123,26 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
                 public void onClick(View view) {
                     int position = holder.getAdapterPosition();
                     Card card = mCardList.get(position);
-                    String imgUrl = card.getPicture().getUrl();
+                    String imgUrl = null;
+                    if(card.getPicture()!=null){
+                        imgUrl = card.getPicture().getUrl();
+                    }
                     //获取img名称
                     imgName = card.getDescription();
                     //通过url,加载图片
-                    initNetWorkImage(imgUrl,mContext);
+                    if(imgUrl!=null){
+                        initNetWorkImage(imgUrl,mContext);
+                    }
+                    //图片加载失败
+                    else{
+                        BitmapDrawable bd = (BitmapDrawable)mContext.getResources().getDrawable(R.drawable.loadingfail);
+                        img = bd.getBitmap();
+                        mImageView = getImageView(img);
+                        //初始化会话
+                        initDialog();
+                        //显示会话
+                        dialog.show();
+                    }
                     Log.d("Adapter","图片地址为: "+ imgUrl);
                 }
             });
@@ -136,24 +152,44 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             Card card = mCardList.get(position);
-            String imgUrl = card.getPicture().getUrl();
-            String headUrl = card.getHeadPicture().getUrl();
+            String imgUrl = null;
+            String headUrl = null;
+            if( card.getPicture() != null){
+                imgUrl = card.getPicture().getUrl();
+            }
+            if( card.getHeadPicture() != null){
+                headUrl = card.getHeadPicture().getUrl();
+            }
 
             Log.d("Adapter","图片地址为:"+imgUrl);
             Log.d("Adapter","头像地址为:"+headUrl);
+            Log.d("Adapter","用户昵称为:"+card.getNickName());
+
             //图片
-            Glide.with(mContext).load(imgUrl)
-                    .into(holder.CardImage);
+            if(imgUrl!=null){
+                Glide.with(mContext).load(imgUrl)
+                        .into(holder.CardImage);
+            }
             //内容
-            String content = "#"+card.getDescription()+"#";
-            holder.CardContent.setText(content);
+            if(card.getDescription()!=null){
+                String content = "#"+card.getDescription()+"#";
+                holder.CardContent.setText(content);
+            }
             //头像
-            Glide.with(mContext).load(headUrl)
-                    .into(holder.HeadPic);
+            if(headUrl!=null){
+                Glide.with(mContext).load(headUrl)
+                        .into(holder.HeadPic);
+            }
             //昵称
-            holder.NickName.setText(card.getNickName());
+            if(card.getNickName()!= ""){
+                holder.NickName.setText(card.getNickName());
+            }
             //收藏数
-            String likeNumber = card.getLikeNumber().toString();
+            String likeNumber = "0";
+            if( card.getLikeNumber() != null){
+                likeNumber = card.getLikeNumber().toString();
+            }
+
             holder.LikeNumber.setText(likeNumber);
         }
 

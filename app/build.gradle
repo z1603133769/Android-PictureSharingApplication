@@ -51,4 +51,5 @@ dependencies {
     implementation 'com.squareup.okio:okio:2.2.2'
     implementation 'com.google.code.gson:gson:2.8.5'
 
+    implementation'com.wang.avi:library:2.1.3'
 }

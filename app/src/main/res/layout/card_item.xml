@@ -22,7 +22,7 @@
             android:layout_marginBottom="3dp"
             android:scaleType="centerCrop"
             android:layout_gravity="center"
-            android:src="@drawable/img"
+            android:src="@drawable/loadingfail"
             android:layout_centerHorizontal="true"
             app:riv_corner_radius="5dp"
             />

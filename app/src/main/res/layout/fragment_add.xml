@@ -1,56 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AddFragment">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="3dp"
-        android:layout_marginBottom="3dp">
-
-        <EditText
-            android:id="@+id/add_content"
+    <ScrollView
+        android:id="@+id/sv"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        >
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:background="@null"
-            android:hint="@string/imgContent"
-            android:textColorHint="#888888"
+            android:layout_height="match_parent"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="3dp">
 
-            android:gravity="top"
-            android:padding="15dp"
-            />
+            <EditText
+                android:id="@+id/add_content"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="@null"
+                android:hint="@string/imgContent"
+                android:textColorHint="#888888"
 
-        <ImageView
-            android:id="@+id/add_img"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:adjustViewBounds="true"
-            android:maxHeight="300dp"
-            android:src="@drawable/add_image"
-            android:layout_below="@id/add_content"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="10dp"
-            />
+                android:gravity="top"
+                android:padding="15dp"
+                />
 
-        <Button
-            android:id="@+id/add_button"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:text=" 发布 "
-            android:textSize="18dp"
-            android:textStyle="bold"
-            android:textColor="@android:color/white"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="70dp"
-            android:layout_marginBottom="50dp"
-            android:background="@drawable/button"
-            android:layout_below="@id/add_img"
-            />
+            <ImageView
+                android:id="@+id/add_img"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:adjustViewBounds="true"
+                android:maxHeight="300dp"
+                android:src="@drawable/add_image"
+                android:layout_below="@id/add_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                />
 
-    </RelativeLayout>
+<!--            <com.wang.avi.AVLoadingIndicatorView-->
+<!--                android:id="@+id/avi"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                style="@style/AVLoadingIndicatorView"-->
+<!--                android:visibility="visible"-->
+<!--                app:indicatorName="BallPulseIndicator"-->
+<!--                app:indicatorColor="@color/colorPrimary"-->
+<!--                android:layout_centerInparent = "true"-->
+<!--                />-->
+
+            <Button
+                android:id="@+id/add_button"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:text=" 发布 "
+                android:textSize="18dp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="70dp"
+                android:layout_marginBottom="50dp"
+                android:background="@drawable/button"
+                android:layout_below="@id/add_img"
+                />
+
+        </RelativeLayout>
+    </ScrollView>
+
 </FrameLayout>
