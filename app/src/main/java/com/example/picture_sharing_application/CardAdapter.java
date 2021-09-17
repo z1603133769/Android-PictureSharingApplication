@@ -5,15 +5,18 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.os.NetworkOnMainThreadException;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +46,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -71,9 +75,13 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
         //显示大图
         private ImageView mImageView;
         //当前用户的点赞列表
-        private Map<String, Boolean> likeList = new HashMap<>();;
+        private Map<String, Boolean> likeList = new HashMap<>();
         private _User currentUser;
         private int likeNumber = 0;
+        private Map<String, Boolean> isShare = new HashMap<>();
+        private ViewHolder targetHolder;
+        //分享信息
+        public static String TITLE = "PiliPili——图片分享";
 
         //handler 用于线程间的通信
         private Handler myHandler = new Handler() {
@@ -91,9 +99,12 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
                         //显示会话
                         dialog.show();
                         break;
-                    //点赞列表
+                    //分享图片
                     case 1:
-
+                        Uri uri =  Uri.parse(MediaStore.Images.Media.insertImage(mContext.getContentResolver(), img, null,null));;
+                        shareImage(uri);
+                        //激活分享图标
+                        targetHolder.ShareIcon.setImageResource(R.drawable.share_a);
                         break;
                     default:
                         break;
@@ -154,7 +165,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
                     imgName = card.getDescription();
                     //通过url,加载图片
                     if(imgUrl!=null){
-                        initNetWorkImage(imgUrl,mContext);
+                        initNetWorkImage(imgUrl,mContext,0);
                     }
                     //图片加载失败
                     else{
@@ -213,6 +224,14 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
                 public void onClick(View view) {
                     int position = holder.getAdapterPosition();
                     Card card = mCardList.get(position);
+                    String content = holder.CardContent.getText().toString();
+                    String url = card.getPicture().getUrl();
+                    //分享图片
+                    initNetWorkImage(url,mContext,1);
+                    //设置图标和标志
+                    targetHolder = holder;
+                    //holder.ShareIcon.setImageResource(R.drawable.share_a);
+                    //isShare.put(content,true);
                 }
             });
 
@@ -224,6 +243,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
             Card card = mCardList.get(position);
             String imgUrl = null;
             String headUrl = null;
+            String content = "#"+card.getDescription()+"#";
             if( card.getPicture() != null){
                 imgUrl = card.getPicture().getUrl();
             }
@@ -232,7 +252,6 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
             }
             //查询该卡片的喜欢用户列表
             queryLikesUser(holder,card);
-
 
             Log.d("Adapter","图片地址为:"+imgUrl);
             Log.d("Adapter","头像地址为:"+headUrl);
@@ -245,8 +264,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
             }
             //内容
             if(card.getDescription()!=null){
-                String content = "#"+card.getDescription()+"#";
-                holder.CardContent.setText(content);
+                String description = "#"+card.getDescription()+"#";
+                holder.CardContent.setText(description);
             }
             //头像
             if(headUrl!=null){
@@ -264,6 +283,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
 ////            }
 //
 //            holder.LikeNumber.setText(like_Number);
+
         }
 
         @Override
@@ -363,6 +383,14 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
         });
     }
 
+    private void shareImage(Uri uri){
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("image/png");
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        //intent.putExtra(Intent.EXTRA_STREAM, bitmap);
+        mContext.startActivity(Intent.createChooser(intent,TITLE));
+    }
+
     private void initDialog() {
             Log.d("Adapter","点赞列表为: "+likeList);
         //大图所依附的dialog
@@ -412,7 +440,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
      * 自己写的加载网络图片的方法
      * img_url 图片的网址
      */
-    public void initNetWorkImage(final String imgUrl, final Context context) {
+    public void initNetWorkImage(final String imgUrl, final Context context,int flag) {
         new AsyncTask<Void, Void, Bitmap>() {
             @Override
             protected Bitmap doInBackground(Void... params) {
@@ -431,7 +459,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
             @Override
             protected void onPostExecute(Bitmap bitmap) {
                 img = bitmap;
-                myHandler.sendEmptyMessage(0);
+                myHandler.sendEmptyMessage(flag);
             }
 
         }.execute();
