@@ -7,6 +7,7 @@ import com.google.gson.annotations.SerializedName;
 
 import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.datatype.BmobFile;
+import cn.bmob.v3.datatype.BmobRelation;
 
 public class Card extends BmobObject {
 
@@ -30,6 +31,11 @@ public class Card extends BmobObject {
 
     //点赞状态
     private Boolean LikeState;
+
+    /**
+     * 一对多关系：用于存储喜欢该帖子的所有用户
+     */
+    private BmobRelation likes;
 
     public Card() {
     }
@@ -88,5 +94,13 @@ public class Card extends BmobObject {
 
     public void setLikeState(Boolean likeState) {
         LikeState = likeState;
+    }
+
+    public BmobRelation getLikes() {
+        return likes;
+    }
+
+    public void setLikes(BmobRelation likes) {
+        this.likes = likes;
     }
 }

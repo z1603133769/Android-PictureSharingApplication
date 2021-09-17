@@ -46,10 +46,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.concurrent.ExecutionException;
 
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BmobPointer;
+import cn.bmob.v3.datatype.BmobRelation;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.UpdateListener;
 import okhttp3.OkHttpClient;
 
 public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
@@ -61,13 +70,17 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
         private Dialog dialog;
         //显示大图
         private ImageView mImageView;
+        //当前用户的点赞列表
+        private Map<String, Boolean> likeList = new HashMap<>();;
+        private _User currentUser;
+        private int likeNumber = 0;
 
         //handler 用于线程间的通信
-        //当点击图片时，通过url加载图片，并显示大图
         private Handler myHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 switch (msg.what) {
+                    //当点击图片时，通过url加载图片，并显示大图
                     case 0:
                         //测试
                         Log.d("Adapter","img的内容为: "+imgName);
@@ -77,6 +90,10 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
                         initDialog();
                         //显示会话
                         dialog.show();
+                        break;
+                    //点赞列表
+                    case 1:
+
                         break;
                     default:
                         break;
@@ -90,6 +107,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
             RoundedImageView HeadPic;
             TextView NickName;
             TextView LikeNumber;
+            ImageView LikeIcon;
+            ImageView ShareIcon;
 
             public ViewHolder(View view){
                 super(view);
@@ -98,6 +117,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
                 HeadPic = view.findViewById(R.id.iv_head);
                 NickName = view.findViewById(R.id.tv_name);
                 LikeNumber = view.findViewById(R.id.tv_likeNumber);
+                LikeIcon = view.findViewById(R.id.iv_love);
+                ShareIcon = view.findViewById(R.id.iv_share);
             }
 
         }
@@ -116,6 +137,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
             View view = LayoutInflater.from(parent.getContext()).
                     inflate(R.layout.card_item,parent,false);
             ViewHolder holder = new ViewHolder(view);
+            //得到当前用户
+            currentUser = BmobUser.getCurrentUser(_User.class);
 
             //图片监听事件
             holder.CardImage.setOnClickListener(new View.OnClickListener() {
@@ -146,6 +169,53 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
                     Log.d("Adapter","图片地址为: "+ imgUrl);
                 }
             });
+
+            //点赞点击事件
+            holder.LikeIcon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = holder.getAdapterPosition();
+                    Card card = mCardList.get(position);
+                    String content = holder.CardContent.getText().toString();
+                    int likes = Integer.parseInt(holder.LikeNumber.getText().toString());
+                    boolean flag = likeList.get(content);
+                    if(flag){
+                        //已点赞状态 --> 未点赞状态
+                        flag = !flag;
+                        likeList.put(content,flag);
+                        //设置图标
+                        holder.LikeIcon.setImageResource(R.drawable.love);
+                        //设置点赞数量
+                        likes -= 1;
+                        String like_Number =  String.valueOf(likes);
+                        holder.LikeNumber.setText(like_Number);
+                        //移除用户信息
+                        removeUserToLikes(card);
+                    }else{
+                        //未点赞状态 --> 已点赞状态
+                        flag = !flag;
+                        likeList.put(content,flag);
+                        //设置图标
+                        holder.LikeIcon.setImageResource(R.drawable.love_a);
+                        //设置点赞数量
+                        likes += 1;
+                        String like_Number =  String.valueOf(likes);
+                        holder.LikeNumber.setText(like_Number);
+                        //添加用户信息
+                        addUserToLikes(card);
+                    }
+                }
+            });
+
+            //分享点击事件
+            holder.ShareIcon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = holder.getAdapterPosition();
+                    Card card = mCardList.get(position);
+                }
+            });
+
             return holder;
         }
 
@@ -160,6 +230,9 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
             if( card.getHeadPicture() != null){
                 headUrl = card.getHeadPicture().getUrl();
             }
+            //查询该卡片的喜欢用户列表
+            queryLikesUser(holder,card);
+
 
             Log.d("Adapter","图片地址为:"+imgUrl);
             Log.d("Adapter","头像地址为:"+headUrl);
@@ -184,13 +257,13 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
             if(card.getNickName()!= ""){
                 holder.NickName.setText(card.getNickName());
             }
-            //收藏数
-            String likeNumber = "0";
-            if( card.getLikeNumber() != null){
-                likeNumber = card.getLikeNumber().toString();
-            }
-
-            holder.LikeNumber.setText(likeNumber);
+//            //收藏数
+//            String like_Number =  String.valueOf(likeNumber);
+////            if( card.getLikeNumber() != null){
+////                likeNumber = card.getLikeNumber().toString();
+////            }
+//
+//            holder.LikeNumber.setText(like_Number);
         }
 
         @Override
@@ -208,7 +281,90 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
             //notifyDataSetChanged();
         }
 
+        //查询点赞用户中是否包含已登录用户
+        private void queryLikesUser(ViewHolder holder,Card card){
+            // 查询喜欢这个帖子的所有用户，因此查询的是用户表
+            BmobQuery<_User> query = new BmobQuery<_User>();
+            //likes是Card表中的字段，用来存储所有喜欢该帖子的用户
+            query.addWhereRelatedTo("likes", new BmobPointer(card));
+            query.findObjects(new FindListener<_User>() {
+                @Override
+                public void done(List<_User> object, BmobException e) {
+                    if(e==null){
+                        likeNumber = object.size();
+                        String content = holder.CardContent.getText().toString();
+                        Log.i("bmob","查询对象为："+content);
+                        Log.i("bmob","查询个数："+object.size());
+                        //设置点赞数
+                        String like_Number =  String.valueOf(likeNumber);;
+                        holder.LikeNumber.setText(like_Number);
+                        //查询是否包含当前用户
+                        boolean isContain = false;
+                        for(_User user : object){
+                            String userName = user.getUsername();
+                            String currentUserName = currentUser.getUsername();
+                            Log.d("Adapter","用户名列表为: "+userName);
+                            Log.d("Adapter","当前用户名列表为: "+currentUserName);
+                            if(userName.equals(currentUserName)){
+                                isContain = true;
+                            }
+                        }
+                        Log.d("Adapter","点赞列表为: "+object);
+                        Log.d("Adapter","当前用户为: "+currentUser);
+                        Log.i("bmob","查询结果为："+isContain);
+                        likeList.put(content,isContain);
+                        //激活为点赞状态
+                        if(isContain){
+                            holder.LikeIcon.setImageResource(R.drawable.love_a);
+                        }
+                        //myHandler.sendEmptyMessage(1);
+                    }else{
+                        Log.i("bmob","失败："+e.getMessage());
+                    }
+                }
+            });
+        }
+
+    //添加当前用户信息到 收藏 表中
+    private void addUserToLikes(Card card){
+        BmobRelation relation = new BmobRelation();
+        //将当前用户添加到多对多关联中
+        relation.add(currentUser);
+        //多对多关联指向`Card`的`likes`字段
+        card.setLikes(relation);
+        card.update(new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if(e==null){
+                    Log.i("bmob","用户B和该帖子关联成功");
+                }else{
+                    Log.i("bmob","失败："+e.getMessage());
+                }
+            }
+
+        });
+    }
+
+    //移除当前用户信息到 收藏 表中
+    private void removeUserToLikes(Card card){
+        BmobRelation relation = new BmobRelation();
+        relation.remove(currentUser);
+        card.setLikes(relation);
+        card.update(new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if(e==null){
+                    Log.i("bmob","关联关系删除成功");
+                }else{
+                    Log.i("bmob","失败："+e.getMessage());
+                }
+            }
+
+        });
+    }
+
     private void initDialog() {
+            Log.d("Adapter","点赞列表为: "+likeList);
         //大图所依附的dialog
         dialog = new Dialog(mContext, R.style.Theme_AppCompat);
         dialog.setContentView(mImageView);

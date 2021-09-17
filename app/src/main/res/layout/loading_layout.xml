@@ -30,6 +30,6 @@
             android:layout_below="@+id/avi"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
-            android:text="加载中..." />
+            android:text="正在上传..." />
     </RelativeLayout>
 </RelativeLayout>

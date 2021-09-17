@@ -71,7 +71,7 @@
         <!--收藏数-->
         <TextView
             android:id="@+id/tv_likeNumber"
-            android:text="100"
+            android:text="0"
             style="@style/TextAppearance.AppCompat.Subhead"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
