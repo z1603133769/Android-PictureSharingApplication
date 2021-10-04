@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -123,6 +124,7 @@ public class AddFragment extends Fragment implements View.OnClickListener {
 
     }
 
+
     //重写每一个功能的点击事件
     @Override
     public void onClick(View v){
@@ -173,6 +175,7 @@ public class AddFragment extends Fragment implements View.OnClickListener {
         BmobFile Picture = new BmobFile( new File(imgUrl) );
         Integer likeNumber = 0;
         Boolean likeState = false;
+        Boolean shareState=false;
         //BmobFile Picture = null;
         //用户信息
         String username = null;
@@ -210,6 +213,7 @@ public class AddFragment extends Fragment implements View.OnClickListener {
         card.setHeadPicture(headPicture);
         card.setLikeNumber(likeNumber);
         card.setLikeState(likeState);
+        card.setShareState(shareState);
 
         //设置加载样式
         LoadingDialog laoding = new LoadingDialog(mContext,0);
@@ -297,7 +301,7 @@ public class AddFragment extends Fragment implements View.OnClickListener {
 
         View rootView = LayoutInflater.from(mContext).inflate(R.layout.fragment_add, null);
         mPhotoPopupWindow.showAtLocation(rootView,
-                Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+        Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
     }
 
     //捕获权限返回状态

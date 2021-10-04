@@ -32,10 +32,16 @@ public class Card extends BmobObject {
     //点赞状态
     private Boolean LikeState;
 
+    //分享状态
+    private Boolean ShareState;
+
     /**
      * 一对多关系：用于存储喜欢该帖子的所有用户
      */
     private BmobRelation likes;
+
+    private BmobRelation shares;
+
 
     public Card() {
     }
@@ -102,5 +108,21 @@ public class Card extends BmobObject {
 
     public void setLikes(BmobRelation likes) {
         this.likes = likes;
+    }
+
+    public BmobRelation getShares(){
+        return shares;
+    }
+
+    public void setShares(BmobRelation shares){
+        this.shares=shares;
+    }
+
+    public Boolean getShareState() {
+        return ShareState;
+    }
+
+    public void setShareState(Boolean shareState) {
+        ShareState = shareState;
     }
 }

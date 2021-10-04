@@ -31,28 +31,27 @@
 
             <ImageView
                 android:id="@+id/add_img"
-                android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:adjustViewBounds="true"
-                android:maxHeight="300dp"
-                android:src="@drawable/add_image"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/add_content"
                 android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
                 android:layout_marginTop="20dp"
+                android:layout_marginRight="30dp"
                 android:layout_marginBottom="10dp"
-                />
+                android:adjustViewBounds="true"
+                android:maxHeight="300dp"
+                android:src="@drawable/add_image" />
 
-<!--            <com.wang.avi.AVLoadingIndicatorView-->
-<!--                android:id="@+id/avi"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                style="@style/AVLoadingIndicatorView"-->
-<!--                android:visibility="visible"-->
-<!--                app:indicatorName="BallPulseIndicator"-->
-<!--                app:indicatorColor="@color/colorPrimary"-->
-<!--                android:layout_centerInparent = "true"-->
-<!--                />-->
+            <!--            <com.wang.avi.AVLoadingIndicatorView-->
+            <!--                android:id="@+id/avi"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                style="@style/AVLoadingIndicatorView"-->
+            <!--                android:visibility="visible"-->
+            <!--                app:indicatorName="BallPulseIndicator"-->
+            <!--                app:indicatorColor="@color/colorPrimary"-->
+            <!--                android:layout_centerInparent = "true"-->
+            <!--                />-->
 
             <Button
                 android:id="@+id/add_button"

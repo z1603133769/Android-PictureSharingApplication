@@ -31,7 +31,7 @@ public class PhotoPopupWindow extends PopupWindow {
     /**
      * 设置布局以及点击事件
      */
-    private void Init() {
+    public void Init() {
         LayoutInflater inflater = (LayoutInflater) mContext
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         assert inflater != null;

@@ -39,7 +39,7 @@
             android:layout_below="@id/iv_image"
             android:layout_alignLeft="@id/iv_image"
             android:text="#测试内容#"
-             />
+            />
 
         <!--头像-->
         <com.makeramen.roundedimageview.RoundedImageView
@@ -67,11 +67,11 @@
             android:layout_toRightOf="@id/iv_head"
             android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
-             />
+            />
         <!--收藏数-->
         <TextView
             android:id="@+id/tv_likeNumber"
-            android:text="0"
+            android:text="100"
             style="@style/TextAppearance.AppCompat.Subhead"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -82,7 +82,7 @@
             android:layout_below="@id/iv_image"
             android:layout_toLeftOf="@id/iv_love"
 
-             />
+            />
 
         <!--收藏图标-->
         <ImageView

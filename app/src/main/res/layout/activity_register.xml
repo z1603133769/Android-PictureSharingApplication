@@ -7,10 +7,45 @@
     android:orientation="vertical"
     tools:context=".RegisterActivity">
 
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp">
+
+
+        <ImageView
+            android:layout_width="78dp"
+            android:layout_height="46dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="38dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/register" />
+
+        <TextView
+            android:layout_width="306dp"
+            android:layout_height="36dp"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center"
+            android:layout_marginStart="80dp"
+            android:layout_marginLeft="80dp"
+            android:layout_marginEnd="38dp"
+            android:layout_marginRight="38dp"
+            android:layout_marginBottom="5dp"
+            android:maxLines="1"
+            android:text="注册"
+            android:textColor="@color/colorPrimary"
+            android:textSize="28dp" />
+
+    </RelativeLayout>
+
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="43dp"
-        android:layout_marginTop="48dp">
+        android:layout_marginTop="30dp">
 
         <ImageView
             android:layout_width="32dp"
@@ -22,7 +57,7 @@
             android:layout_marginLeft="38dp" />
 
         <EditText
-            android:id="@+id/username"
+            android:id="@+id/account"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -54,7 +89,7 @@
             android:layout_marginLeft="38dp" />
 
         <EditText
-            android:id="@+id/nickname"
+            android:id="@+id/old_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -89,7 +124,7 @@
             android:layout_marginLeft="38dp" />
 
         <EditText
-            android:id="@+id/password"
+            android:id="@+id/new_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -112,7 +147,7 @@
         android:layout_marginTop="16dp">
 
         <EditText
-            android:id="@+id/confirm"
+            android:id="@+id/confirm_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -138,9 +173,11 @@
 
 
     <RelativeLayout
+        android:id="@+id/keyboard"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_marginTop="16dp">
+        android:layout_height="120dp"
+        android:layout_marginTop="16dp"
+        android:clickable="true">
 
         <Button
             android:id="@+id/upload"
@@ -148,17 +185,19 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginStart="38dp"
-            android:layout_marginBottom="19dp"
-            android:text="上传头像："
-            android:layout_marginLeft="38dp" />
+            android:layout_marginLeft="38dp"
+            android:layout_marginBottom="36dp"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/cardview_light_background"
+            android:text="上传头像：" />
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="151dp"
+            android:layout_height="107dp"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="200dp"
-            android:layout_marginBottom="-1dp" />
+            android:layout_marginLeft="194dp"
+            android:layout_marginBottom="0dp" />
 
 
     </RelativeLayout>
@@ -166,32 +205,32 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="32dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="14dp"
         android:layout_marginBottom="32dp"
         android:layout_weight="1">
 
 
         <Button
-            android:id="@+id/cancel"
+            android:id="@+id/back"
             android:layout_width="334dp"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginStart="38dp"
             android:layout_marginTop="67dp"
             android:layout_marginEnd="38dp"
-            android:background="@color/purple_200"
+            android:background="@color/colorPrimary"
             android:text="取消"
             android:textColor="@android:color/white" />
 
         <Button
-            android:id="@+id/signup"
+            android:id="@+id/update"
             android:layout_width="334dp"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginStart="38dp"
             android:layout_marginTop="7dp"
             android:layout_marginEnd="38dp"
-            android:background="@color/purple_200"
+            android:background="@color/colorPrimary"
             android:text="注册"
             android:textColor="@android:color/white" />
 

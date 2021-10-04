@@ -5,14 +5,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,13 +36,16 @@ public class LoginActivity extends AppCompatActivity
     private EditText etUsername;
     private CheckBox cbRememberPwd;
     private TextView Sign;
+    private Context mContext = this;
+    private RelativeLayout key;
 
+    public static Uri imgurl;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        //Bmob.resetDomain("https://open3.bmob.cn/8/");
+        Bmob.resetDomain("https://open3.bmob.cn/8/");
         Bmob.initialize(this, "e1708cc4012f7c433a0e65ad4b6e4386");
 
 
@@ -49,9 +55,11 @@ public class LoginActivity extends AppCompatActivity
         etPwd = findViewById(R.id.et_pwd);
         etUsername = findViewById(R.id.et_username);
         cbRememberPwd = findViewById(R.id.cb_remember_pwd);
+        key=findViewById(R.id.keyboard_);
         Button btLogin = findViewById(R.id.bt_login);
         Sign=findViewById(R.id.tv_sign_up);
 
+        //“注册”
         Sign.setOnClickListener(this);
         Sign.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -63,13 +71,23 @@ public class LoginActivity extends AppCompatActivity
             }
         });
 
+        //点击空白区域收起软键盘
+        key.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            }
+        });
 
-
+        //”登录“
         btLogin.setOnClickListener(this);
-
         btLogin.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+
+                LoadingDialog laoding = new LoadingDialog(mContext,0);
+                laoding.show();
 
                 String spFileName = getResources()
                         .getString(R.string.shared_preferences_file_name);
@@ -89,7 +107,6 @@ public class LoginActivity extends AppCompatActivity
                 if(cbRememberPwd.isChecked()) {
                     String password = etPwd.getText().toString();
                     String account = etUsername.getText().toString();
-
                     editor.putString(accountKey, account);
                     editor.putString(passwordKey, password);
                     editor.putBoolean(rememberPasswordKey, true);
@@ -104,14 +121,13 @@ public class LoginActivity extends AppCompatActivity
                 final _User user= new _User();
                 user.setUsername(etUsername.getText().toString());
                 user.setPassword(etPwd.getText().toString());
+
                 user.login(new SaveListener<_User>() {
                     @Override
                     public void done(_User bmobUser, BmobException e) {
                         if (e==null) {
                             _User user = BmobUser.getCurrentUser(_User.class);
                             //Snackbar.make(view, "登录成功：" + user.getUsername(), Snackbar.LENGTH_LONG).show();
-
-
                             if (user.isLogin()) {
                                  user = BmobUser.getCurrentUser(_User.class);
                                 //Snackbar.make(view, "当前用户：" + user.getUsername() + "-" , Snackbar.LENGTH_LONG).show();
@@ -121,19 +137,11 @@ public class LoginActivity extends AppCompatActivity
                             } else {
                                 Snackbar.make(view, "尚未登录，请先登录", Snackbar.LENGTH_LONG).show();
                             }
-
-
-
-
-
-
-
-
-
                             Intent intent=new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
 
                         } else {
+                            laoding.dismiss();
                             Snackbar.make(view, "登录失败：" + e.getMessage(), Snackbar.LENGTH_LONG).show();
                         }
                     }
