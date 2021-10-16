@@ -257,6 +257,9 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
         if( card.getHeadPicture() != null){
             headUrl = card.getHeadPicture().getUrl();
         }
+//        //设置点赞列表
+//        Constants.LIKELIST = likeList;
+
         //查询该卡片的喜欢用户列表
         queryLikesUser(holder,card);
         queryShareUser(holder,card);

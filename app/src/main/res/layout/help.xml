@@ -220,7 +220,7 @@
         android:id="@+id/case6"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_marginBottom="225dp"
+
         android:background="@color/white">
 
         <TextView
@@ -253,7 +253,8 @@
     <RelativeLayout
         android:id="@+id/case9"
         android:layout_width="match_parent"
-        android:layout_height="48dp">
+        android:layout_height="48dp"
+        android:layout_marginTop="335dp" >
 
         <View
             android:layout_width="match_parent"
