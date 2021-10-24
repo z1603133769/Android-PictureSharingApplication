@@ -445,7 +445,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
         });
     }
 
-
+    //分享图片
     private void shareImage(Uri uri){
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("image/png");
@@ -478,6 +478,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>{
                     public void onClick(DialogInterface dialog, int which) {
                         //saveCroppedImage(((BitmapDrawable) mImageView.getDrawable()).getBitmap());
                         Bitmap img = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
+                        //保存文件
                         GalleryFileSaver.saveBitmapToGallery(mContext,imgName,img);
                     }
                 });

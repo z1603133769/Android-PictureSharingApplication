@@ -153,7 +153,7 @@ public class AddFragment extends Fragment implements View.OnClickListener {
         return cursor.getString(column_index);
     }
 
-
+    //上传Card数据到Bmob数据库
     private  void uploadCard(){
         //找不到图片Uri
         if(imgUri == null){
@@ -260,7 +260,7 @@ public class AddFragment extends Fragment implements View.OnClickListener {
 
     //相册和拍照选择会话框
     private void showSelectDialog(){
-        //创建存放头像的文件夹
+        //创建存放图片的文件夹
         //PictureUtil.mkdirMyPetRootDirectory();
         mPhotoPopupWindow = new PhotoPopupWindow( getActivity(), new View.OnClickListener() {
             @Override
